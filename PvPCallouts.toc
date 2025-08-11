@@ -1,0 +1,7 @@
+## Interface: 110107
+## Title: PvPCallouts
+## Version: 1.0
+## Notes: Quick buttons for PvP battleground callouts
+## Author: 73tone
+
+PvPCallouts.lua
