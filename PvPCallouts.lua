@@ -81,6 +81,23 @@ local bgCallouts = {
     },
     
     
+    -- Slayer's Rise (Midnight expansion, 40v40 epic BG)
+    ["Slayer's Rise"] = {
+        "INC NORTH POST",
+        "INC EAST POST",
+        "INC SOUTH POST",
+        "NORTH POST LOST",
+        "EAST POST LOST",
+        "SOUTH POST LOST",
+        "ALL POSTS CLEAR",
+        "PUSH PATH OF PREDATION",
+        "INC SHENZAR REFINERY",
+        "KILL DOMANAAR",
+        "PUSH THEIR SPIRE",
+        "HELP NEEDED",
+        "FALL BACK"
+    },
+
     -- Generic/Unknown BG
     ["Default"] = {
         "INCOMING 3+",
