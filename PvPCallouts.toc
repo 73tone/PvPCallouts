@@ -1,6 +1,6 @@
 ## Interface: 120001
 ## Title: PvPCallouts
-## Version: 1.2
+## Version: 1.5
 ## Notes: Quick buttons for PvP battleground callouts
 ## Author: 73tone
 

@@ -81,6 +81,47 @@ local bgCallouts = {
     },
     
     
+    -- Alterac Valley (40v40 epic BG)
+    ["Alterac Valley"] = {
+        "INC FROSTWOLF KEEP",
+        "INC STORMPIKE",
+        "INC ICEBLOOD",
+        "INC STONEHEARTH",
+        "KILL CAPTAIN FIRST",
+        "REINFORCE TOWERS",
+        "SUMMON ELEMENTAL",
+        "PUSH NORTH",
+        "PUSH SOUTH",
+        "FALL BACK",
+        {label = "TARGET BOSS", alliance = "Drek'Thar", horde = "Vanndar Stormpike"},
+    },
+
+    -- Isle of Conquest (40v40 epic BG)
+    ["Isle of Conquest"] = {
+        "INC DOCKS",
+        "INC HANGAR",
+        "INC WORKSHOP",
+        "INC REFINERY",
+        "INC QUARRY",
+        "TAKE HANGAR",
+        "BOARD KEEP",
+        "PUSH KEEP",
+        "DEFEND KEEP",
+        "FALL BACK",
+        {label = "TARGET BOSS", alliance = "Overlord Agmar", horde = "High Commander Halford Wyrmbane"},
+    },
+
+    -- Ashran (epic BG)
+    ["Ashran"] = {
+        "INC MID",
+        "INC RUNE",
+        "PUSH THEIR BASE",
+        "DEFEND OUR SIDE",
+        "GROUP UP",
+        "FALL BACK",
+        {label = "TARGET GUARDIAN", alliance = "Kronus", horde = "Fangraal"},
+    },
+
     -- Slayer's Rise (Midnight expansion, 40v40 epic BG)
     ["Slayer's Rise"] = {
         "INC NORTH POST",
@@ -95,7 +136,8 @@ local bgCallouts = {
         "KILL DOMANAAR",
         "PUSH THEIR SPIRE",
         "HELP NEEDED",
-        "FALL BACK"
+        "FALL BACK",
+        {label = "TARGET DOMANAAR", alliance = "Domanaar Ziadan", horde = "Domanaar Vidious"},
     },
 
     -- Generic/Unknown BG
@@ -136,27 +178,37 @@ local function CreateButtonsForBG(callouts)
         local button = CreateFrame("Button", "PvPCallout"..i, frame, "UIPanelButtonTemplate")
         button:SetSize(170, buttonHeight)
         button:SetPoint("TOP", frame, "TOP", 0, -35 - (i-1) * (buttonHeight + buttonSpacing))
-        button:SetText(callout)
-        
-        -- Click handler
-        button:SetScript("OnClick", function()
-            -- Send to instance/battleground chat
-            if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-                SendChatMessage(callout, "INSTANCE_CHAT")
-            elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-                SendChatMessage(callout, "PARTY") 
-            else
-                SendChatMessage(callout, "YELL")
-            end
-            
-            -- Visual feedback
-            local originalText = callout
-            button:SetText("SENT!")
-            C_Timer.After(0.5, function()
-                button:SetText(originalText)
+
+        if type(callout) == "table" then
+            -- Boss target button
+            button:SetText(callout.label)
+            button:SetScript("OnClick", function()
+                local faction = UnitFactionGroup("player")
+                local npcName = (faction == "Alliance") and callout.alliance or callout.horde
+                RunMacroText("/targetexact " .. npcName)
+                button:SetText("TARGETED!")
+                C_Timer.After(0.5, function()
+                    button:SetText(callout.label)
+                end)
             end)
-        end)
-        
+        else
+            -- Callout button: send message to group/instance chat
+            button:SetText(callout)
+            button:SetScript("OnClick", function()
+                if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+                    SendChatMessage(callout, "INSTANCE_CHAT")
+                elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+                    SendChatMessage(callout, "PARTY")
+                else
+                    SendChatMessage(callout, "YELL")
+                end
+                button:SetText("SENT!")
+                C_Timer.After(0.5, function()
+                    button:SetText(callout)
+                end)
+            end)
+        end
+
         currentButtons[i] = button
     end
     
