@@ -185,7 +185,7 @@ local function CreateButtonsForBG(callouts)
             button:SetScript("OnClick", function()
                 local faction = UnitFactionGroup("player")
                 local npcName = (faction == "Alliance") and callout.alliance or callout.horde
-                TargetByName(npcName, true)
+                RunMacroText("/targetexact " .. npcName)
                 button:SetText("TARGETED!")
                 C_Timer.After(0.5, function()
                     button:SetText(callout.label)
