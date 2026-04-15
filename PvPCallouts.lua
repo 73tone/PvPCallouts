@@ -95,7 +95,8 @@ local bgCallouts = {
         "KILL DOMANAAR",
         "PUSH THEIR SPIRE",
         "HELP NEEDED",
-        "FALL BACK"
+        "FALL BACK",
+        {label = "TARGET DOMANAAR", alliance = "Domanaar Ziadan", horde = "Domanaar Vidious"},
     },
 
     -- Generic/Unknown BG
@@ -136,27 +137,37 @@ local function CreateButtonsForBG(callouts)
         local button = CreateFrame("Button", "PvPCallout"..i, frame, "UIPanelButtonTemplate")
         button:SetSize(170, buttonHeight)
         button:SetPoint("TOP", frame, "TOP", 0, -35 - (i-1) * (buttonHeight + buttonSpacing))
-        button:SetText(callout)
-        
-        -- Click handler
-        button:SetScript("OnClick", function()
-            -- Send to instance/battleground chat
-            if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-                SendChatMessage(callout, "INSTANCE_CHAT")
-            elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-                SendChatMessage(callout, "PARTY") 
-            else
-                SendChatMessage(callout, "YELL")
-            end
-            
-            -- Visual feedback
-            local originalText = callout
-            button:SetText("SENT!")
-            C_Timer.After(0.5, function()
-                button:SetText(originalText)
+
+        if type(callout) == "table" then
+            -- Boss target button
+            button:SetText(callout.label)
+            button:SetScript("OnClick", function()
+                local faction = UnitFactionGroup("player")
+                local npcName = (faction == "Alliance") and callout.alliance or callout.horde
+                TargetByName(npcName, true)
+                button:SetText("TARGETED!")
+                C_Timer.After(0.5, function()
+                    button:SetText(callout.label)
+                end)
             end)
-        end)
-        
+        else
+            -- Callout button: send message to group/instance chat
+            button:SetText(callout)
+            button:SetScript("OnClick", function()
+                if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+                    SendChatMessage(callout, "INSTANCE_CHAT")
+                elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+                    SendChatMessage(callout, "PARTY")
+                else
+                    SendChatMessage(callout, "YELL")
+                end
+                button:SetText("SENT!")
+                C_Timer.After(0.5, function()
+                    button:SetText(callout)
+                end)
+            end)
+        end
+
         currentButtons[i] = button
     end
     
